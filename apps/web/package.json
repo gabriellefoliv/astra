@@ -4,17 +4,20 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack --port 3000",
-    "build": "next build",
+    "dev": "next dev --turbopack --port 5173",
+    "build": "rm -rf .next/cache && next build",
     "start": "next start",
     "lint": "next lint --max-warnings 0",
     "check-types": "tsc --noEmit"
   },
   "dependencies": {
     "@repo/ui": "workspace:*",
+    "@tailwindcss/postcss": "^4.0.14",
     "next": "^15.2.1",
+    "postcss": "^8.5.3",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "tailwindcss": "^4.0.14"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
