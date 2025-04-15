@@ -7,21 +7,17 @@ export const deleteDatabaseRoute: FastifyPluginAsyncZod = async app => {
     '/api/database/:id',
     {
       schema: {
-        summary: 'Delete a database for authenticated user',
+        summary: 'Delete a user database',
         tags: ['databases'],
         params: z.object({
           id: z.string(),
         }),
         response: {
           200: z.object({
-            message: z.string(),
+            success: z.boolean(),
           }),
-          401: z.object({
-            error: z.string(),
-          }),
-          403: z.object({
-            error: z.string(),
-          }),
+          401: z.object({ error: z.string() }),
+          403: z.object({ error: z.string() }),
         },
       },
     },
@@ -34,10 +30,10 @@ export const deleteDatabaseRoute: FastifyPluginAsyncZod = async app => {
       }
 
       try {
-        await deleteDatabase({ userId, id })
-        reply.status(200).send({ message: 'Database deleted successfully' })
+        const result = await deleteDatabase({ userId, databaseId: id })
+        return reply.status(200).send(result)
       } catch (error) {
-        reply.status(403).send({ error: 'Database not found or unauthorized' })
+        return reply.status(403).send({ error: 'Failed to delete database' })
       }
     }
   )

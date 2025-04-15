@@ -1,20 +1,14 @@
-import prisma from '../lib/prisma'
+import fs from 'node:fs/promises'
+import path from 'node:path'
 
-interface DeleteDatabaseParams {
-  userId: string
-  id: string
-}
+export async function deleteDatabase({ userId, databaseId }: { userId: string, databaseId: string }) {
+  const dbPath = path.resolve(__dirname, '../databases', userId, `${databaseId}.sqlite`)
 
-export async function deleteDatabase({ userId, id }: DeleteDatabaseParams) {
-  const database = await prisma.database.findUnique({
-    where: { id },
-  })
-
-  if (!database || database.userId !== userId) {
-    throw new Error('Database not found or unauthorized')
+  try {
+    await fs.access(dbPath) // Verifica se o arquivo existe
+    await fs.unlink(dbPath) // Deleta o arquivo
+    return { success: true }
+  } catch (error) {
+    throw new Error('Database not found or could not be deleted')
   }
-
-  await prisma.database.delete({
-    where: { id },
-  })
 }

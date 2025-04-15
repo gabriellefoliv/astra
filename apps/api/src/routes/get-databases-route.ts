@@ -14,8 +14,8 @@ export const getDatabasesRoute: FastifyPluginAsyncZod = async app => {
             z.object({
               id: z.string(),
               name: z.string(),
-              data: z.string(),
-              userId: z.string(),
+              path: z.string(),
+              createdAt: z.date(),
             })
           ),
           401: z.object({
@@ -31,9 +31,14 @@ export const getDatabasesRoute: FastifyPluginAsyncZod = async app => {
         return reply.status(401).send({ error: 'Unauthorized' })
       }
 
-      const { databases } = await getDatabases({ userId })
-
-      reply.status(200).send(databases)
+      try {
+        const databases = await getDatabases({ userId })
+        reply.status(200).send(databases)
+        // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+      } catch (error: any) {
+        console.error('Failed to fetch databases:', error)
+        reply.status(500).send({ error: 'Failed to fetch databases' })
+      }
     }
   )
 }

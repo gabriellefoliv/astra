@@ -9,7 +9,5 @@ export async function getDatabases({ userId }: GetDatabasesParams) {
     where: { userId },
   })
 
-  return {
-    databases,
-  }
+  return databases
 }

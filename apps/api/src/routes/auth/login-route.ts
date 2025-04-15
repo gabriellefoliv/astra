@@ -15,6 +15,11 @@ export const loginRoute: FastifyPluginAsyncZod = async app => {
         }),
         response: {
           200: z.object({
+            user: z.object({
+              id: z.string(),
+              email: z.string(),
+              name: z.string(),
+            }),
             token: z.string(),
           }),
         },
@@ -23,9 +28,12 @@ export const loginRoute: FastifyPluginAsyncZod = async app => {
     async (request, reply) => {
       const { email, password } = request.body
 
-      const { token } = await login(app, { email, password })
+      const { user, token } = await login(app, { email, password })
 
-      reply.send({ token })
+      reply.send({
+        user,
+        token,
+      })
     }
   )
 }

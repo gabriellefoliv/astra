@@ -31,7 +31,14 @@ export async function login(
       { expiresIn: '7d' }
     )
 
-    return { token }
+    return {
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+      },
+      token,
+    }
   } catch (error) {
     throw new Error('Login failed')
   }

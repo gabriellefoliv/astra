@@ -11,8 +11,14 @@ import { loginRoute } from './routes/auth/login-route'
 import { signUpRoute } from './routes/auth/sign-up-route'
 import { createDatabaseRoute } from './routes/create-database-route'
 import { deleteDatabaseRoute } from './routes/delete-database-route'
+import { executeQueryRoute } from './routes/execute-query-route'
 import { getDatabasesRoute } from './routes/get-databases-route'
-import { updateDatabaseRoute } from './routes/update-database-route'
+
+interface JwtPayload {
+  userId: string
+  email: string
+  name: string
+}
 
 const app = fastify().withTypeProvider<ZodTypeProvider>()
 
@@ -20,7 +26,9 @@ app.setSerializerCompiler(serializerCompiler)
 app.setValidatorCompiler(validatorCompiler)
 
 app.register(fastifyCors, {
-  origin: true,
+  origin: 'http://localhost:5173',
+  credentials: true,
+  allowedHeaders: ['Authorization', 'Content-Type'],
 })
 
 app.register(fastifyJwt, {
@@ -32,20 +40,24 @@ app.register(loginRoute)
 
 //
 
-app.addHook('preHandler', async (request, reply) => {
-  try {
-    await request.jwtVerify()
-  } catch (err) {
-    reply.status(401).send({ error: 'Não autorizado' })
-  }
+app.register(async protectedApp => {
+  protectedApp.addHook('preHandler', async (request, reply) => {
+    try {
+      await request.jwtVerify<JwtPayload>() // Tira o parâmetro token daqui!
+      console.log('Usuário autenticado:', request.user)
+
+      // biome-ignore lint/suspicious/noExplicitAny: <explanation>
+    } catch (err: any) {
+      console.error('Erro de autenticação:', err.message)
+      return reply.status(401).send({ error: 'Não autorizado' })
+    }
+  })
+
+  protectedApp.register(createDatabaseRoute)
+  protectedApp.register(getDatabasesRoute)
+  protectedApp.register(deleteDatabaseRoute)
+  protectedApp.register(executeQueryRoute)
 })
-
-//
-
-app.register(createDatabaseRoute)
-app.register(getDatabasesRoute)
-app.register(updateDatabaseRoute)
-app.register(deleteDatabaseRoute)
 
 app.listen({ port: env.PORT }).then(() => {
   console.log('🚀 HTTP server running!')
