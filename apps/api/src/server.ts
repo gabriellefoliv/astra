@@ -13,6 +13,10 @@ import { createDatabaseRoute } from './routes/create-database-route'
 import { deleteDatabaseRoute } from './routes/delete-database-route'
 import { executeQueryRoute } from './routes/execute-query-route'
 import { getDatabasesRoute } from './routes/get-databases-route'
+import { createProjectRoute } from './routes/projects/create-project-route'
+import { deleteProjectRoute } from './routes/projects/delete-project-route'
+import { getProjectDetailsRoute } from './routes/projects/get-project-details'
+import { getProjectsByUserRoute } from './routes/projects/get-projects-by-user-route'
 
 interface JwtPayload {
   userId: string
@@ -57,6 +61,11 @@ app.register(async protectedApp => {
   protectedApp.register(getDatabasesRoute)
   protectedApp.register(deleteDatabaseRoute)
   protectedApp.register(executeQueryRoute)
+
+  protectedApp.register(createProjectRoute)
+  protectedApp.register(getProjectsByUserRoute)
+  protectedApp.register(getProjectDetailsRoute)
+  protectedApp.register(deleteProjectRoute)
 })
 
 app.listen({ port: env.PORT }).then(() => {

@@ -4,7 +4,7 @@ import { signUp } from '../../functions/auth/sign-up'
 
 export const signUpRoute: FastifyPluginAsyncZod = async app => {
   app.post(
-    '/api/user',
+    '/api/users',
     {
       schema: {
         summary: 'Create a new user',

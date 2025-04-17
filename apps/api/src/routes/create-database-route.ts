@@ -40,14 +40,12 @@ export const createDatabaseRoute: FastifyPluginAsyncZod = async app => {
           databaseId,
         })
       } catch (error) {
-        reply
-          .status(400)
-          .send({
-            error:
-              error instanceof Error
-                ? error.message
-                : 'An unknown error occurred',
-          })
+        reply.status(400).send({
+          error:
+            error instanceof Error
+              ? error.message
+              : 'An unknown error occurred',
+        })
       }
     }
   )
